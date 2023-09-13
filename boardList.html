@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Node Express Board to HTML</h2>
+    <div id="con"></div>
+    <script>
+        $(document).ready(function){
+            $ajax({
+                url:"localhost:4000/board/list",
+                method:"get",
+                type:"json",
+                sucess:function(data){
+                    console.log(data);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

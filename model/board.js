@@ -1,18 +1,18 @@
 //npm install mariadb
 const mariadb = require("mariadb");
-const cfg = require("./conf");
+const cfg = require("../conf.js");
 
 const pool = mariadb.createPool({
     host:cfg.host,    port:cfg.port,    user:cfg.user,
     password:cfg.pass,    connectionLimit:cfg.connectionLimit
 });
 
-async function GetSampleList(){
+async function GetBoardList(){
     let conn, rows;
     try {
         conn = await pool.getConnection();
         conn.query('USE teaspoon');
-        rows = await conn.query('select * from sample');
+        rows = await conn.query('select * from board');
     } catch(err){
         throw err;
     } finally {
@@ -21,12 +21,12 @@ async function GetSampleList(){
     }
 }
 
-async function GetSample(no){
+async function GetBoard(seq){
     let conn, rows;
     try {
         conn = await pool.getConnection();
         conn.query('USE teaspoon');
-        row = await conn.query(`select * from sample where no=${no}`);
+        row = await conn.query(`select * from board where seq=${seq}`);
     } catch(err){
         throw err;
     } finally {
@@ -35,17 +35,16 @@ async function GetSample(no){
     }
 }
 
-async function AddSample(sample){
-    let conn, nickname, msg, sql;
-    nickname = sample.name;
+async function AddBoard(board){
+    let conn, msg, sql;
     try {
         conn = await pool.getConnection();
         conn.query('USE teaspoon');
-        sql = `insert into sample(no, name) values (default, ?)`;
-        await conn.query(sql, nickname);
-        msg = "등록 성공하였습니다.";
+        sql = `insert into board(seq, title, content, nickname, regdate, visited) values(default, ?, ?, ?, default, default);`;
+        await conn.query(sql, board);
+        msg = "등록 성공";
     } catch(err){
-        msg = "등록 실패하였습니다.";
+        msg = "등록 실패";
         throw err;
     } finally {
         if(conn) conn.end();
@@ -53,16 +52,16 @@ async function AddSample(sample){
     }
 }
 
-async function EditSample(sample){
+async function EditBoard(board){
     let conn, msg, sql;
     try {
         conn = await pool.getConnection();
         conn.query('USE teaspoon');
-        sql = `update sample set name=? where no=?`;
-        await conn.query(sql, sample);
-        msg = "수정 성공하였습니다.";
+        sql = `update board set title=?, content=? where seq=?`;
+        await conn.query(sql, board);
+        msg = "수정 성공";
     } catch(err){
-        msg = "수정 실패하였습니다.";
+        msg = "수정 실패";
         throw err;
     } finally {
         if(conn) conn.end();
@@ -70,16 +69,16 @@ async function EditSample(sample){
     }
 }
 
-async function DelSample(no){
+async function DelBoard(seq){
     let conn, msg, sql;
     try {
         conn = await pool.getConnection();
         conn.query('USE teaspoon');
-        sql = `delete from sample where no=?`;
-        await conn.query(sql, no);
-        msg = "삭제 성공하였습니다.";
+        sql = `delete from board where seq=?`;
+        await conn.query(sql, seq);
+        msg = "삭제 성공";
     } catch(err){
-        msg = "삭제 실패하였습니다.";
+        msg = "삭제 실패";
         throw err;
     } finally {
         if(conn) conn.end();
@@ -88,6 +87,6 @@ async function DelSample(no){
 }
 
 module.exports = { 
-    getSampleList: GetSampleList, getSample: GetSample, addSample:AddSample,
-    editSample:EditSample, delSample:DelSample 
+    getBoardList: GetBoardList, getBoard: GetBoard, addBoard:AddBoard,
+    editBoard:EditBoard, delBoard:DelBoard 
 }
